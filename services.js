@@ -1,6 +1,7 @@
 'use strict'
 const fs = require('fs');
 const mongoose = require('mongoose');
+const _ = require('lodash');
 
 const ObjectId = mongoose.Types.ObjectId;
 const gridfs = require('mongoose-gridfs');
@@ -8,6 +9,7 @@ const gridfs = require('mongoose-gridfs');
 let filesSchema = require('./filesSchema')
 let chunksSchema = require('./chunksSchema')
 let kafkaProducer = require('./producer')
+
 
 const { model: Attachment } = gridfs({
     collection: 'attachments',
@@ -45,7 +47,9 @@ async function readMongo(id) {
         let filesData = await filesSchema.findOne({"_id" : ObjectId(id)})
         //console.log("files==",files)
         let videoInChunks= await chunksSchema.find({files_id : id});
-         sendDataToConsumer(filesData,videoInChunks)
+        (async () => {
+          await sendDataToConsumer(filesData,videoInChunks)
+        })();
         //console.log("chunks==",chunks)
     }catch(e){
         console.log("error",e)
@@ -54,10 +58,16 @@ async function readMongo(id) {
 }
 
   async function sendDataToConsumer(filesData,videoInChunks){
+    console.log("ARRAY======",videoInChunks)
     try {
-           
-    } catch (e) {
-
+     let abc = await kafkaProducer.producerFunc(null, 'data', filesData);
+     console.log("abc====",abc);
+      // _.forEach(videoInChunks, (chunks) => {
+        let resPro = await kafkaProducer.producerFunc(JSON.stringify(videoInChunks), 'chunk');
+        console.log("resPro000000000",resPro);
+      // })
+    } catch (e) { 
+      console.log("ERROR===",e);
     }
   }
 

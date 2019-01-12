@@ -2,10 +2,10 @@
 let req = require("express");
 let express = req();
 let mongoose = require('mongoose');
+
 let router = req.Router();
-let services = require('./services')
 let config    = require('./config/development');
-// let consumer = require('./consumer')
+let consumer = require('./consumer')
 let db = config.db;
 
 // let models = require('./config/api/models/check')
@@ -25,8 +25,10 @@ mongoose.connection.on('connected', function () {
     express.use('/api', router);
     express.listen(port);
     console.log('Server started successfully.. !!! Times- PORT - ' + port + '\n\n\n');
+    let services = require('./services')
     services.putMongo();
-// consumer.consumerFunc()
+    let consumer = require('./consumer')
+    consumer.consumerFunc()
 });
 
 mongoose.connection.on('error', function (mongoError) {
