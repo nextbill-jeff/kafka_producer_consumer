@@ -4,7 +4,7 @@ let express = req();
 let mongoose = require('mongoose');
 
 let router = req.Router();
-let config    = require('./config/development');
+let config    = require('./config/development'); //change db to developmentConsumer
 let consumer = require('./consumer')
 let db = config.db;
 

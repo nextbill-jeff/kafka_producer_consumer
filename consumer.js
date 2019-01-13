@@ -1,6 +1,6 @@
 'use strict'
 const mongoose = require('mongoose');
-const consConfig = require('./config/developmentConsumer')
+// const consConfig = require('./config/developmentConsumer')
 console.log("consConfig===",consConfig)
 let kafka = require('kafka-node');
 let HighLevelConsumer = kafka.HighLevelConsumer;
