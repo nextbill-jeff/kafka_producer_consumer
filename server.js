@@ -24,7 +24,7 @@ mongoose.connection.on('connected', function () {
     let port = process.env.PORT || 6020;
     express.use('/api', router);
     express.listen(port);
-    console.log('Server started successfully.. !!! Times- PORT - ' + port + '\n\n\n');
+    console.log('Server started successfully.. !!! PORT - ' + port + '\n\n\n');
     let services = require('./services')
     services.putMongo();
     let consumer = require('./consumer')

@@ -2,7 +2,6 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
 const _ = require('lodash');
-
 const ObjectId = mongoose.Types.ObjectId;
 const gridfs = require('mongoose-gridfs');
 // let config = require('./config')
@@ -23,34 +22,17 @@ async function putMongo() {
       contentType: 'video/3gpp'
     });
     attachment.write(readStream, (error, attachment) => {
-        console.log("error===",JSON.stringify(error))
-        console.log("attachment===",JSON.stringify(attachment))
        readMongo(attachment._id)
      });
 }
 
-// async function fetchMongo(id) {
-//     const readStream = Attachment.readById(id);                          //TODO To check whether the file saved is being read.
-//     readStream.on('error', (error)=> {
-//         console.log("error",error)
-//     });
-//     readStream.on('data', (data) => {
-//         console.log("data===",data);
-//     });
-//     console.log("readStream----",readStream)
-// }
-
-
 async function readMongo(id) {
-    console.log("id",id);
     try{
         let filesData = await filesSchema.findOne({"_id" : ObjectId(id)})
-        //console.log("files==",files)
         let videoInChunks= await chunksSchema.find({files_id : id});
         (async () => {
           await sendDataToConsumer(filesData,videoInChunks)
         })();
-        //console.log("chunks==",chunks)
     }catch(e){
         console.log("error",e)
     }
@@ -58,16 +40,13 @@ async function readMongo(id) {
 }
 
   async function sendDataToConsumer(filesData,videoInChunks){
-    console.log("ARRAY======",videoInChunks)
     try {
      let abc = await kafkaProducer.producerFunc(null, 'data', filesData);
-     console.log("abc====",abc);
-      // _.forEach(videoInChunks, (chunks) => {
+    //  console.log("filesData==Response",filesData.length);
         let resPro = await kafkaProducer.producerFunc(JSON.stringify(videoInChunks), 'chunk');
-        console.log("resPro000000000",resPro);
-      // })
+        // console.log("videoInChunks==Response",videoInChunks);
     } catch (e) { 
-      console.log("ERROR===",e);
+      console.log("Error",e);
     }
   }
 
